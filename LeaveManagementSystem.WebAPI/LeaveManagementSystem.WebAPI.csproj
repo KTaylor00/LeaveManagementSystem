@@ -4,10 +4,18 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>f0ef3350-5907-4356-a9fb-9be5c2105004</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.23.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LeaveManagementSystem.Data\LeaveManagementSystem.Data.csproj" />
   </ItemGroup>
 
 </Project>
