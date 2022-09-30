@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.UI", "LeaveManagementSystem.UI\LeaveManagementSystem.UI.csproj", "{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.WebAPI", "LeaveManagementSystem.WebAPI\LeaveManagementSystem.WebAPI.csproj", "{395F7730-CAAE-4376-B926-A343B7EF63D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.Data", "LeaveManagementSystem.Data\LeaveManagementSystem.Data.csproj", "{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395F7730-CAAE-4376-B926-A343B7EF63D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395F7730-CAAE-4376-B926-A343B7EF63D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395F7730-CAAE-4376-B926-A343B7EF63D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395F7730-CAAE-4376-B926-A343B7EF63D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C51CFB3B-E7C0-496B-B2AE-E802794385CA}
+	EndGlobalSection
+EndGlobal
