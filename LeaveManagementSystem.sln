@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.UI", "LeaveManagementSystem.UI\LeaveManagementSystem.UI.csproj", "{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaveManagementSystem.UI", "LeaveManagementSystem.UI\LeaveManagementSystem.UI.csproj", "{9D199276-6FEC-40E7-B6D5-BB18FCA7A9EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.WebAPI", "LeaveManagementSystem.WebAPI\LeaveManagementSystem.WebAPI.csproj", "{395F7730-CAAE-4376-B926-A343B7EF63D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaveManagementSystem.WebAPI", "LeaveManagementSystem.WebAPI\LeaveManagementSystem.WebAPI.csproj", "{395F7730-CAAE-4376-B926-A343B7EF63D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagementSystem.Data", "LeaveManagementSystem.Data\LeaveManagementSystem.Data.csproj", "{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaveManagementSystem.Data", "LeaveManagementSystem.Data\LeaveManagementSystem.Data.csproj", "{655B5F01-B0EE-45A8-AB5D-C1E51B039AF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,8 @@
-﻿using LeaveManagementSystem.Data.Models;
+﻿using Dapper;
+using LeaveManagementSystem.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,23 +11,38 @@ namespace LeaveManagementSystem.Data.DataAccess;
 
 public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
 {
-    private readonly ISqlDataAccess data;
+    private readonly ISqlDataAccess db;
 
-    public EmployeeLeaveInfoDBService(ISqlDataAccess data)
+    public EmployeeLeaveInfoDBService(ISqlDataAccess db)
     {
-        this.data = data;
+        this.db = db;
     }
 
     // Employee DataAccess
-    public Task<EmployeeModel> GetEmployee(int id) => throw new NotImplementedException();
+    public Task<EmployeeModel> GetEmployee(int employeeId)
+    {
+        string sql = "Employee_Get " + employeeId.ToString();
 
-    public Task<EmployeeModel> SaveEmployee(EmployeeModel employee) => throw new NotImplementedException();
+        return db.LoadRecord<EmployeeModel, dynamic>(sql, new { });
+    }
+
+    public Task<List<EmployeeRequestsModel>> GetEmployeeRequests() => throw new NotImplementedException();
+
+    public Task SaveEmployee(EmployeeModel employee)
+    {
+        var p = new DynamicParameters();
+        p.Add("pkEmployeeId", employee.pkEmployeeId, DbType.Int32);
+        p.Add("FirstName", employee.FirstName, DbType.String);
+        p.Add("LastName", employee.LastName, DbType.String);
+
+        string sql = "Employee_Save";
+
+        return db.SaveRecord(sql, p);
+    }
 
     public Task DeleteEmployee(int id) => throw new NotImplementedException();
 
     // Leave DataAccess
-    public Task<LeaveModel> GetLeaveData(int leaveId) => throw new NotImplementedException();
-    public Task<List<LeaveModel>> GetLeavesData() => throw new NotImplementedException();
     public Task SaveLeave(LeaveModel leave) => throw new NotImplementedException();
     public Task DeleteLeave(int leaveId) => throw new NotImplementedException();
 
@@ -39,4 +56,5 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
     public Task<List<LeaveTypeModel>> GetLeaveTypes() => throw new NotImplementedException();
     public Task SaveLeaveType(LeaveTypeModel leaveType) => throw new NotImplementedException();
     public Task DeleteLeaveType(int leaveTypeId) => throw new NotImplementedException();
+    public Task<LeaveModel> GetLeaveData(int leaveId) => throw new NotImplementedException();
 }

@@ -10,6 +10,7 @@ public class LeaveBalanceModel
 {
     public int pkLeaveBalanceId { get; set; }
     public int fkEmployeeId { get; set; }
-    public string? LeaveTaken { get; set; }
-    public string? LeaveAllowed { get; set; }
+    public decimal LeaveTaken { get; set; }
+    public decimal LeaveAllowed { get; set; }
+    public decimal LeaveLeft { get; set; }
 }

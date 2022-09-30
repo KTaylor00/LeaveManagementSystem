@@ -1,5 +1,24 @@
-﻿<h3>EmployeeInfo</h3>
+﻿@page "/employee-leave-form"
+
+<MudCard Class="mt-5">
+    <MudCardContent>
+        <EditForm Model="@employeeLeave">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div>
+                <MudTextField @bind-Value="employeeLeave.FirstName" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudTextField Class="mt-lg-5" @bind-Value="employeeLeave.LastName" Label="First Name" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudDatePicker Class="mt-lg-5" Color="Color.Info" @bind-Date="employeeLeave.StartDate" Placeholder="Select Start Date" DateFormat="dd.MM.yy" Margin="Margin.Dense" />
+                <MudDatePicker Class="mt-lg-5" Color="Color.Info" @bind-Date="employeeLeave.EndDate" Placeholder="Select End Date" DateFormat="dd.MM.yy" Margin="Margin.Dense" />
+            
+                <MudButton class="justify-content-end mt-lg-5" type="submit">Submit</MudButton>
+            </div>
+        </EditForm>
+    </MudCardContent>
+</MudCard>
 
 @code {
+    private EmployeeLeaveFormModel employeeLeave = new();
 
 }
