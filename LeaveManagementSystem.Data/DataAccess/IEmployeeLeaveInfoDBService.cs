@@ -11,7 +11,6 @@ public interface IEmployeeLeaveInfoDBService
 {
     // Employee DataAccess
     Task<EmployeeModel> GetEmployee(int id);
-    Task<List<EmployeeRequestsModel>> GetEmployeeRequests();
     Task SaveEmployee(EmployeeModel employee);
     Task DeleteEmployee(int id);
 
@@ -27,6 +26,5 @@ public interface IEmployeeLeaveInfoDBService
 
     // LeaveType DataAccess
     Task<List<LeaveTypeModel>> GetLeaveTypes();
-    Task SaveLeaveType(LeaveTypeModel leaveType);
     Task DeleteLeaveType(int leaveTypeId);
 }

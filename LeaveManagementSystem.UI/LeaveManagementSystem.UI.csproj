@@ -4,14 +4,16 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a7f9c79d-8d2c-4f9a-8a4c-005c4d1c44f9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="6.0.16" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.57.0.2759" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="20.2.0.50" />
+    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="20.2.0.50" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="20.2.0.50" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="20.2.0.50" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="20.2.0.50" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
   </ItemGroup>
 

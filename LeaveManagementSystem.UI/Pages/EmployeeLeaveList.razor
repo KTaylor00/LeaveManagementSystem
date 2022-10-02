@@ -1,8 +1,31 @@
 ﻿@page "/employee-leave-list"
 
-
+@inject IEmployeeLeaveInfoService employeeService
 
 
 @code {
+    private List<EmployeeLeaveFormModel> employeesLeaveInfo = new();
 
+    protected override async Task OnInitializedAsync()  
+    {
+        await employeeService.EmployeeLeaveAuthHeader();
+
+        var employee = await employeeService.GetEmployee(1);
+        var leave = await employeeService.GetLeaveData(1);
+        var leaveBalance = await employeeService.GetBalance(1);
+        //var leaveType = await employeeService.GetLeaveType(1);
+
+        EmployeeLeaveFormModel employeeLeave = new()
+        {
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            StartDate = leave.StartDate,
+            EndDate = leave.EndDate,
+            Reason = leave.Reason,
+            DaysTaken = leave.DaysTaken,
+            LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken,
+        };
+
+        employeesLeaveInfo.Add(employeeLeave);
+    }
 }

@@ -1,12 +1,21 @@
+using LeaveManagementSystem.UI.Services;
+using Syncfusion.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMudServices();
+var api = builder.Configuration.GetValue<string>("ApiUrl");
+var syncKey = builder.Configuration.GetValue<string>("SyncKey");
+
+builder.Services.AddSyncfusionBlazor();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddHttpClient<IAuthService, AuthService>(opts => { opts.BaseAddress = new Uri(api); });
+builder.Services.AddHttpClient<IEmployeeLeaveInfoService, EmployeeLeaveInfoService>(opts => { opts.BaseAddress = new Uri(api); });
+
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncKey);
 
 var app = builder.Build();
 

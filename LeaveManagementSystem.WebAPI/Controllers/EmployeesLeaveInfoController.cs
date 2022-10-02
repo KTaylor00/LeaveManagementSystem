@@ -18,11 +18,20 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             this.logger = logger;
         }
 
-        // GET: api/EmployeesLeaveInfo/leaves-data
-        [HttpGet("leaves-data")]
-        public async Task<ActionResult<List<LeaveModel>>> GetLeavesData()
+        // GET: api/EmployeesLeaveInfo/leave-types
+        [HttpGet("leave-types")]
+        public async Task<ActionResult<List<LeaveTypeModel>>> GetLeaveTypes()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var output = await data.GetLeaveTypes();
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The Get call to api/EmployeesLeaveInfo/leave-types failed.");
+                return BadRequest();
+            }
         }
 
         // GET api/EmployeesLeaveInfo/5/employee
@@ -42,6 +51,40 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             }
         }
 
+        // GET api/EmployeesLeaveInfo/5/leave
+        [HttpGet("{leaveId}/leave")]
+        public async Task<ActionResult<LeaveModel>> GetLeaveData(int leaveId)
+        {
+            try
+            {
+                var output = await data.GetLeaveData(leaveId);
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The Get call to {ApiPath} failed. The Id was {leaveId}",
+                    $"api/EmployeesLeaveInfo/leaveId/leave", leaveId);
+                return BadRequest();
+            }
+        }
+
+        // GET api/EmployeesLeaveInfo/5/leave-balance
+        [HttpGet("{leaveBalanceId}/leave-balance")]
+        public async Task<ActionResult<LeaveBalanceModel>> GetLeaveBalance(int leaveBalanceId)
+        {
+            try
+            {
+                var output = await data.GetBalance(leaveBalanceId);
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The Get call to {ApiPath} failed. The Id was {leaveBalanceId}",
+                    $"api/EmployeesLeaveInfo/leaveBalanceId/leave-balance", leaveBalanceId);
+                return BadRequest();
+            }
+        }
+
         // POST api/EmployeesLeaveInfo/employee
         [HttpPost("employee")]
         public async Task<IActionResult> SaveEmployeeData([FromBody] EmployeeModel employee)
@@ -54,6 +97,38 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/employee failed.");
+                return BadRequest();
+            }
+        }
+
+        // POST api/EmployeesLeaveInfo/leave-balance
+        [HttpPost("leave-balance")]
+        public async Task<IActionResult> SaveLeaveBalance([FromBody] LeaveBalanceModel leaveBalance)
+        {
+            try
+            {
+                await data.SaveBalance(leaveBalance);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/leave-balance failed.");
+                return BadRequest();
+            }
+        }
+
+        // POST api/EmployeesLeaveInfo/leave
+        [HttpPost("leave")]
+        public async Task<IActionResult> SaveLeaveData([FromBody] LeaveModel leave)
+        {
+            try
+            {
+                await data.SaveLeave(leave);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/leave failed.");
                 return BadRequest();
             }
         }

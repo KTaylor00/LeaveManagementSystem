@@ -1,6 +1,26 @@
-﻿
-<MudNavMenu Color="Color.Info">
-    <MudNavLink Href="/">Home</MudNavLink>
-    <MudNavLink Class="mt-5" Href="/employee-leave-form">Apply for leave</MudNavLink>
-    <MudNavLink Class="mt-5" Href="/employee-leave-list">Leave Requests</MudNavLink>
-</MudNavMenu>
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Leave Management</a>
+    </div>
+</div>
+
+<div>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employee-leave-form">
+                <span aria-hidden="true"></span><span class="displayText">Apply for Leave</span>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employee-leave-list">
+                <span aria-hidden="true"></span><span class="displayText">Leave Requests</span>
+            </NavLink>
+        </div>
+    </nav>
+</div>
+

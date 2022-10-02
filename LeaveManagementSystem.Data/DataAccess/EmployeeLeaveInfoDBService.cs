@@ -26,8 +26,6 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
         return db.LoadRecord<EmployeeModel, dynamic>(sql, new { });
     }
 
-    public Task<List<EmployeeRequestsModel>> GetEmployeeRequests() => throw new NotImplementedException();
-
     public Task SaveEmployee(EmployeeModel employee)
     {
         var p = new DynamicParameters();
@@ -43,18 +41,60 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
     public Task DeleteEmployee(int id) => throw new NotImplementedException();
 
     // Leave DataAccess
-    public Task SaveLeave(LeaveModel leave) => throw new NotImplementedException();
+    public Task SaveLeave(LeaveModel leave)
+    {
+        var p = new DynamicParameters();
+        p.Add("pkLeaveId", leave.pkLeaveId, DbType.Int32);
+        p.Add("fkEmployeeId", leave.fkEmployeeId, DbType.Int32);
+        p.Add("fkLeaveTypeId", leave.fkLeaveTypeId, DbType.Int32);
+        p.Add("StartDate", leave.StartDate, DbType.DateTime);
+        p.Add("EndDate", leave.EndDate, DbType.DateTime);
+        p.Add("DaysTaken", leave.DaysTaken, DbType.Decimal);
+        p.Add("Reason", leave.Reason, DbType.String);
+
+        string sql = "Leave_Save";
+
+        return db.SaveRecord(sql, p);
+    }
     public Task DeleteLeave(int leaveId) => throw new NotImplementedException();
 
     // LeaveBalance DataAccess
-    public Task<LeaveBalanceModel> GetBalance(int leaveBalanceId) => throw new NotImplementedException();
-    public Task SaveBalance(LeaveBalanceModel leaveBalance) => throw new NotImplementedException();
+    public Task<LeaveBalanceModel> GetBalance(int leaveBalanceId)
+    {
+        string sql = "LeaveBalance_Get " + leaveBalanceId.ToString();
+
+        return db.LoadRecord<LeaveBalanceModel, dynamic>(sql, new { });
+    }
+
+    public Task SaveBalance(LeaveBalanceModel leaveBalance)
+    {
+        var p = new DynamicParameters();
+        p.Add("pkLeaveBalanceId", leaveBalance.pkLeaveBalanceId, DbType.Int32);
+        p.Add("fkEmployeeId", leaveBalance.fkEmployeeId, DbType.Int32);
+        p.Add("fkLeaveTypeId", leaveBalance.fkLeaveTypeId, DbType.Int32);
+        p.Add("LeaveTaken", leaveBalance.LeaveTaken, DbType.Decimal);
+        p.Add("LeaveAllowed", leaveBalance.LeaveAllowed, DbType.Decimal);
+
+        string sql = "LeaveBalance_Save";
+
+        return db.SaveRecord(sql, p);
+    }
     public Task DeleteBalance(int leaveBalanceId) => throw new NotImplementedException();
 
     // LeaveType DataAccess
-    public Task<LeaveTypeModel> GetLeaveType(int leaveTypeId) => throw new NotImplementedException();
-    public Task<List<LeaveTypeModel>> GetLeaveTypes() => throw new NotImplementedException();
-    public Task SaveLeaveType(LeaveTypeModel leaveType) => throw new NotImplementedException();
+    public Task<List<LeaveTypeModel>> GetLeaveTypes()
+    {
+        string sql = "SELECT * FROM LeaveType";
+
+        return db.LoadData<LeaveTypeModel, dynamic>(sql, new { });
+    }
+
     public Task DeleteLeaveType(int leaveTypeId) => throw new NotImplementedException();
-    public Task<LeaveModel> GetLeaveData(int leaveId) => throw new NotImplementedException();
+
+    public Task<LeaveModel> GetLeaveData(int leaveId)
+    {
+        string sql = "Leave_Get " + leaveId.ToString();
+
+        return db.LoadRecord<LeaveModel, dynamic>(sql, new { });
+    }
 }
