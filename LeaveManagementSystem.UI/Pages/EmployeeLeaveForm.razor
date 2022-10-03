@@ -1,42 +1,61 @@
 ﻿@page "/employee-leave-form"
 
 @inject IEmployeeLeaveInfoService employeeService
+@inject NavigationManager navMan
+@inject IGoogleService gService
 
 <SfCard>
     <EditForm Model="employeeLeave" OnValidSubmit="SaveEmployeeLeaveInfo">
+        <div class="m-4 col-sm-2">
+            <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
+                <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
+                <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
+            </SfDropDownList>
+        </div>
+
         <div class="m-5">
-            <div class="mt-3 col-sm-2">
-                <SfTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="First Name" @bind-Value="employee.FirstName" />
-            </div>
-            <div class="mt-3 col-sm-2">
-                <SfTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Last Name" @bind-Value="employee.LastName" />
+            <div class="d-flex mt-3">
+                <div class="me-4 col-sm-2">
+                    <SfTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="First Name" @bind-Value="employee.FirstName" />
+                </div>
+                <div class="col-sm-2">
+                    <SfTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Last Name" @bind-Value="employee.LastName" />
+                </div>
             </div>
             <div class="mt-4 col-sm-2">
-                <SfDropDownList ID="leaveType" TValue="string" TItem="LeaveTypeModelDisplay" @bind-Value="leaveType.LeaveType" PopupHeight="230px" Placeholder="Leave Type" DataSource="@leaveTypes">
-                    <DropDownListEvents TItem="LeaveTypeModelDisplay" TValue="string"></DropDownListEvents>
-                    <DropDownListFieldSettings Text="LeaveType"></DropDownListFieldSettings>
+                <SfDropDownList ID="leaveType" TValue="int" TItem="LeaveTypeModelDisplay" @bind-Value="leaveType.pkLeaveTypeId" PopupHeight="230px" Placeholder="Leave Type" DataSource="@leaveTypes">
+                    <DropDownListEvents TItem="LeaveTypeModelDisplay" TValue="int"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="LeaveType" Value="pkLeaveTypeId"></DropDownListFieldSettings>
                 </SfDropDownList>
             </div>
-            <SfDatePicker TValue="DateTime?" @bind-Value="leave.StartDate" />
-            <SfDatePicker TValue="DateTime?" @bind-Value="leave.EndDate" >
-                <DatePickerEvents TValue="DateTime?" ValueChange="ValueChangeHandler"></DatePickerEvents>
-            </SfDatePicker>
-            <div class="mt-3 col-sm-2">
+            <div class="d-flex mt-4">
+                <div class="me-4 col-sm-3">
+                    <SfDatePicker TValue="DateTime?" @bind-Value="leave.StartDate" Format="dd/MM/yyyy" />  
+                </div>
+                <div class="col-sm-3">
+                    <SfDatePicker TValue="DateTime?" @bind-Value="leave.EndDate" Format="dd/MM/yyyy">
+                        <DatePickerEvents TValue="DateTime?" ValueChange="EndDateValueChangeHandler"></DatePickerEvents>
+                    </SfDatePicker>
+                </div>
+            </div>
+            <div class="mt-3 col-sm-5">
                 <SfTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Reason" @bind-Value="leave.Reason" />
             </div>
-            <div class="mt-3 col-sm-2">
-                <SfNumericTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Days Taken" @bind-Value="leave.DaysTaken" ShowSpinButton="false" Enabled="false" />
-            </div>
-            <div class="mt-3 col-sm-2">
-                <SfNumericTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Leave Left" @bind-Value="leaveBalance.LeaveLeft" ShowSpinButton="false" Enabled="false" />
+            <div class="d-flex mt-3">
+                <div class="me-4 col-sm-2">
+                    <SfNumericTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Days Taken" @bind-Value="leave.DaysTaken" ShowSpinButton="false" Enabled="false" Format="#" />
+                </div>
+                <div class="col-sm-2">
+                    <SfNumericTextBox FloatLabelType="FloatLabelType.Auto" Placeholder="Leave Left" @bind-Value="leaveBalance.LeaveLeft" ShowSpinButton="false" Enabled="false" Format="#" />
+                </div>
             </div>
             <button class="btn btn-success mt-4" type="submit">Submit</button>
         </div>
     </EditForm>
 </SfCard>
-
 @code {
     private EmployeeModelDisplay employee = new();
+    private List<EmployeeModelDisplay> employees = new();
     private LeaveBalanceModelDisplay leaveBalance = new();
     private LeaveModelDisplay leave = new();
     private LeaveTypeModelDisplay leaveType = new();
@@ -47,19 +66,10 @@
     {
         try
         {
+            leaveBalance.LeaveAllowed = 21;
             await employeeService.EmployeeLeaveAuthHeader();
-            employee = await employeeService.GetEmployee(1);
-            leaveBalance = await employeeService.GetBalance(1);
+            employees = await employeeService.GetEmployees();
             leaveTypes = await employeeService.GetLeaveTypes();
-
-            if (leaveBalance.LeaveAllowed is null) 
-            {
-                leaveBalance.LeaveAllowed = 21;
-            }
-            else 
-            {
-                leaveBalance.LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken;
-            } 
         }
         catch (Exception)
         {
@@ -75,20 +85,23 @@
             {
                 fkEmployeeId = employee.pkEmployeeId,
                 fkLeaveTypeId = leaveType.pkLeaveTypeId,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
                 StartDate = leave.StartDate,
                 EndDate = leave.EndDate,
                 DaysTaken = leave.DaysTaken,
                 Reason = leave.Reason,
-                LeaveTaken = leaveBalance.LeaveAllowed - leave.DaysTaken,
-                LeaveAllowed = leaveBalance.LeaveTaken,
+                LeaveTaken = leaveBalance.LeaveTaken,
+                LeaveAllowed = leaveBalance.LeaveAllowed,
             };
 
-            EmployeeModelDisplay newEmployee = new()
+            var googleEmployeeEvent = new
             {
-                FirstName = employeeLeave.FirstName,
-                LastName = employeeLeave.LastName
+                Summary = leave.Reason,
+                Start = new[] {
+                    new { dateTime = leave.StartDate }
+    },
+                End = new[] {
+                    new { dateTime = leave.EndDate }
+    }
             };
 
             LeaveBalanceModelDisplay newLeaveBalance = new()
@@ -109,9 +122,11 @@
                 DaysTaken = employeeLeave.DaysTaken
             };
 
-            await employeeService.SaveEmployee(newEmployee);
             await employeeService.SaveLeaveBalance(newLeaveBalance);
             await employeeService.SaveLeave(newLeave);
+            await gService.CreateEvent(googleEmployeeEvent);
+
+            navMan.NavigateTo("/employee-leave-form", forceLoad: true);
         }
         catch (Exception)
         {
@@ -119,8 +134,27 @@
         }
     }
 
-    public void ValueChangeHandler(ChangedEventArgs<DateTime?> args)
+    private async Task EmployeeValueChangeHandler(ChangeEventArgs<int, EmployeeModelDisplay> args) 
     {
-        leave.DaysTaken = (leave.EndDate - leave.StartDate).Value.Days;
+        employee = await employeeService.GetEmployee(args.Value);
+        leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
+
+        leaveBalance.LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken;
+    }
+
+    public void EndDateValueChangeHandler(ChangedEventArgs<DateTime?> args)
+    {
+        var date = leave.StartDate;
+        var leaveDays = 0;
+        while (date <= leave.EndDate)
+        {
+            if (date.Value.DayOfWeek.ToString() != "Saturday" && date.Value.DayOfWeek.ToString() != "Sunday") 
+            {
+                leaveDays += 1;
+            }
+            date = date.Value.AddDays(1);
+        }
+        leave.DaysTaken = leaveDays;
+        leaveBalance.LeaveTaken += leave.DaysTaken;
     }
 }

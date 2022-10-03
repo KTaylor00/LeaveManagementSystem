@@ -26,18 +26,6 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
         return db.LoadRecord<EmployeeModel, dynamic>(sql, new { });
     }
 
-    public Task SaveEmployee(EmployeeModel employee)
-    {
-        var p = new DynamicParameters();
-        p.Add("pkEmployeeId", employee.pkEmployeeId, DbType.Int32);
-        p.Add("FirstName", employee.FirstName, DbType.String);
-        p.Add("LastName", employee.LastName, DbType.String);
-
-        string sql = "Employee_Save";
-
-        return db.SaveRecord(sql, p);
-    }
-
     public Task DeleteEmployee(int id) => throw new NotImplementedException();
 
     // Leave DataAccess
@@ -96,5 +84,12 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
         string sql = "Leave_Get " + leaveId.ToString();
 
         return db.LoadRecord<LeaveModel, dynamic>(sql, new { });
+    }
+
+    public Task<List<EmployeeModel>> GetEmployees()
+    {
+        string sql = "SELECT * FROM Employee";
+
+        return db.LoadData<EmployeeModel, dynamic>(sql, new { });
     }
 }

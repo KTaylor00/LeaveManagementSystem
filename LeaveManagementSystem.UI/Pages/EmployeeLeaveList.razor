@@ -2,30 +2,59 @@
 
 @inject IEmployeeLeaveInfoService employeeService
 
+<div class="m-4 col-sm-2">
+    <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
+        <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
+        <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
+    </SfDropDownList>
+</div>
+
+<SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo">
+    <GridColumns>
+        <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
+        <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yyyy" />
+        <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yyyy" />
+        <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
+        <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
+        <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Days Taken" Format="#" />
+        <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Days Left" Format="#" />
+    </GridColumns>
+</SfGrid>
 
 @code {
     private List<EmployeeLeaveFormModel> employeesLeaveInfo = new();
+    private EmployeeLeaveFormModel? employeeLeave;
+    private EmployeeModelDisplay employee = new();
+    private List<EmployeeModelDisplay> employees = new();
+    private SfGrid<EmployeeLeaveFormModel>? LeaveInfoGrid;
 
     protected override async Task OnInitializedAsync()  
     {
         await employeeService.EmployeeLeaveAuthHeader();
+        employees = await employeeService.GetEmployees();
+    }
 
-        var employee = await employeeService.GetEmployee(1);
-        var leave = await employeeService.GetLeaveData(1);
-        var leaveBalance = await employeeService.GetBalance(1);
-        //var leaveType = await employeeService.GetLeaveType(1);
+    private async Task EmployeeValueChangeHandler(ChangeEventArgs<int, EmployeeModelDisplay> args)
+    {
+        employee = await employeeService.GetEmployee(args.Value);
+        var leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
+        var leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
 
-        EmployeeLeaveFormModel employeeLeave = new()
+        employeeLeave = new()
         {
-            FirstName = employee.FirstName,
-            LastName = employee.LastName,
+            FullName = employee.FirstName + ' ' + employee.LastName,
             StartDate = leave.StartDate,
             EndDate = leave.EndDate,
             Reason = leave.Reason,
-            DaysTaken = leave.DaysTaken,
+            LeaveType = leave.LeaveType,
+            LeaveTaken = leaveBalance.LeaveTaken,
             LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken,
         };
 
-        employeesLeaveInfo.Add(employeeLeave);
+        if (!employeesLeaveInfo.Exists(name => name.FullName == employeeLeave.FullName))
+                employeesLeaveInfo.Add(employeeLeave);
+
+        await LeaveInfoGrid!.Refresh();
+
     }
 }

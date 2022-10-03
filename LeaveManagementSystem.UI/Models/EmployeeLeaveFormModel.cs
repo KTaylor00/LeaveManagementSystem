@@ -6,6 +6,7 @@ public class EmployeeLeaveFormModel
     public int fkLeaveTypeId { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+    public string? FullName { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public decimal? DaysTaken { get; set; }

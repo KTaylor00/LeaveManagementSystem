@@ -34,6 +34,22 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             }
         }
 
+        // GET: api/EmployeesLeaveInfo/employees
+        [HttpGet("employees")]
+        public async Task<ActionResult<List<LeaveTypeModel>>> GetEmployees()
+        {
+            try
+            {
+                var output = await data.GetEmployees();
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The Get call to api/EmployeesLeaveInfo/employees failed.");
+                return BadRequest();
+            }
+        }
+
         // GET api/EmployeesLeaveInfo/5/employee
         [HttpGet("{employeeId}/employee")]
         public async Task<ActionResult<EmployeeModel>> GetEmployee(int employeeId)
@@ -85,22 +101,6 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             }
         }
 
-        // POST api/EmployeesLeaveInfo/employee
-        [HttpPost("employee")]
-        public async Task<IActionResult> SaveEmployeeData([FromBody] EmployeeModel employee)
-        {
-            try
-            {
-                await data.SaveEmployee(employee);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/employee failed.");
-                return BadRequest();
-            }
-        }
-
         // POST api/EmployeesLeaveInfo/leave-balance
         [HttpPost("leave-balance")]
         public async Task<IActionResult> SaveLeaveBalance([FromBody] LeaveBalanceModel leaveBalance)
@@ -131,18 +131,6 @@ namespace LeaveManagementSystem.WebAPI.Controllers
                 logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/leave failed.");
                 return BadRequest();
             }
-        }
-
-        // PUT api/EmployeesLeaveInfo/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/EmployeesLeaveInfo/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
