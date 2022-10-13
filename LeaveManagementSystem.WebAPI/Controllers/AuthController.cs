@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using LeaveManagementSystem.Data.DataAccess;
+using LeaveManagementSystem.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,6 +13,7 @@ namespace LeaveManagementSystem.WebAPI.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private EmployeeModel employee1 = new();
     private readonly IConfiguration config;
 
     public AuthController(IConfiguration config)
@@ -19,7 +22,7 @@ public class AuthController : ControllerBase
     }
 
     public record AuthData(string? Username, string? Password);
-    public record UserData(int Id, string Username);
+    public record UserData(int Id, string Username, string Role);
 
     // POST api/Auth/token
     [HttpPost("token")]
@@ -45,7 +48,8 @@ public class AuthController : ControllerBase
         List<Claim> claims = new()
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Sub, user.Username)
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Role, user.Role),
         };
 
         var token = new JwtSecurityToken(
@@ -59,11 +63,19 @@ public class AuthController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private static UserData? ValidateCredentials(AuthData data)
+    private UserData? ValidateCredentials(AuthData data)
     {
-        if (CompareValues(data.Username, "test") && CompareValues(data.Password, "test"))
+        if (CompareValues(data.Username, "luke") && CompareValues(data.Password, "test"))
         {
-            return new UserData(1, data.Username!);
+            return new UserData(1, data.Username!, "user");
+        }
+        else if (CompareValues(data.Username, "vader") && CompareValues(data.Password, "test"))
+        {
+            return new UserData(2, data.Username!, "user");
+        }
+        else if (CompareValues(data.Username, "admin") && CompareValues(data.Password, "test"))
+        {
+            return new UserData(3, data.Username!, "admin");
         }
 
         return null;

@@ -15,4 +15,7 @@ public class EmployeeLeaveFormModel
     public decimal? LeaveAllowed { get; set; }
     public decimal? LeaveLeft { get; set; }
     public string? LeaveType { get; set; }
+    public bool Approved { get; set; }
+    public string? ApprovedBy { get; set; }
+    public DateTime DateApproved { get; set; }
 }

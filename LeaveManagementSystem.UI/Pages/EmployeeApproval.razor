@@ -1,7 +1,15 @@
-﻿@page "/employee-leave-list"
+﻿@page "/employee-approval"
+@attribute [Authorize(Roles = "admin")]
 
 @inject IEmployeeLeaveInfoService employeeService
 @inject ProtectedSessionStorage sessionStorage
+
+<div class="m-4 col-sm-2">
+    <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
+        <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
+        <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
+    </SfDropDownList>
+</div>
 
 <SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo">
     <GridColumns>
@@ -10,13 +18,18 @@
         <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
         <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
         <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
+        <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Days Taken" Format="#" />
+        <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Days Left" Format="#" />
         <GridColumn Field="@nameof(employeeLeave.Approved)" HeaderText="Approved" />
         <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
         <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
     </GridColumns>
 </SfGrid>
+
+<div class="d-flex mt-4">
+    <button class="btn btn-success me-4" @onclick="Approve">Approve</button>
+    <button class="btn btn-danger" @onclick="Reject">Reject</button>
+</div>
 
 @code {
     private List<EmployeeLeaveFormModel> employeesLeaveInfo = new();
@@ -24,19 +37,17 @@
     private EmployeeModelDisplay employee = new();
     private List<EmployeeModelDisplay> employees = new();
     private SfGrid<EmployeeLeaveFormModel>? LeaveInfoGrid;
+    private LeaveModelDisplay leaveApproval = new();
 
-    private int userId;
-
-    protected override async Task OnInitializedAsync()  
+    protected override async Task OnInitializedAsync()
     {
         await employeeService.EmployeeLeaveAuthHeader();
-        var token = await sessionStorage.GetAsync<string>("token");
+        employees = await employeeService.GetEmployees();
+    }
 
-        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token.Value);
-        string userSub = jwt.Claims.First(c => c.Type == "sub").Value;
-        userId = Convert.ToInt32(userSub);
-
-        employee = await employeeService.GetEmployee(userId);
+    private async Task EmployeeValueChangeHandler(ChangeEventArgs<int, EmployeeModelDisplay> args)
+    {
+        employee = await employeeService.GetEmployee(args.Value);
         var leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
         var leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
 
@@ -49,14 +60,38 @@
             LeaveType = leave.LeaveType,
             LeaveTaken = leaveBalance.LeaveTaken,
             LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken,
-            Approved = leave.Approved,
-            ApprovedBy = leave.ApprovedBy,
-            DateApproved = leave.DateApproved,
         };
 
-        if (!employeesLeaveInfo.Exists(name => name.FullName == employeeLeave.FullName))
+        if (employeesLeaveInfo.Count > 0)
+        {
+            employeesLeaveInfo.RemoveAll(employeeLeave => employeeLeave.fkEmployeeId != employee.pkEmployeeId);
             employeesLeaveInfo.Add(employeeLeave);
+        }
+        else
+        {
+            employeesLeaveInfo.Add(employeeLeave);
+        }
 
         await LeaveInfoGrid!.Refresh();
+
+    }
+
+    private void Approve() 
+    {
+        Approval(true);
+    }
+
+    private void Reject() 
+    {
+        Approval(false);
+    }
+
+    private void Approval(bool approved) 
+    {
+        leaveApproval.Approved = approved;
+        leaveApproval.ApprovedBy = "Admin";
+        leaveApproval.DateApproved = DateTime.Now;
+
+        employeeService.SaveLeave(leaveApproval);
     }
 }

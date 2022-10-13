@@ -1,26 +1,80 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject ProtectedSessionStorage sessionStorage
+@inject NavigationManager navMan
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Leave Management</a>
     </div>
 </div>
+<AuthorizeView Roles="user">
+    <Authorized>
+        <div>
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="employee-leave-form">
+                        <span aria-hidden="true"></span><span class="displayText">Apply for Leave</span>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="employee-leave-list">
+                        <span aria-hidden="true"></span><span class="displayText">Leave Request</span>
+                    </NavLink>
+                </div>
+                <hr />
+                <div class="nav-item px-3">
+                    <div class="nav-link">
+                        <button class="logout-btn btn btn-danger" @onclick="@Logout">Logout</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="admin">
+    <Authorized>
+    <div>
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="employee-leave-form">
+                    <span aria-hidden="true"></span><span class="displayText">Apply for Leave</span>
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="employee-approval">
+                    <span aria-hidden="true"></span><span class="displayText">Employee Leave Approval</span>
+                </NavLink>
+            </div>
+            <hr />
+            <div class="nav-item px-3">
+                <div class="nav-link">
+                    <button class="logout-btn btn btn-danger" @onclick="@Logout">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </div>
+    </Authorized>
+</AuthorizeView>
 
-<div>
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="employee-leave-form">
-                <span aria-hidden="true"></span><span class="displayText">Apply for Leave</span>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="employee-leave-list">
-                <span aria-hidden="true"></span><span class="displayText">Leave Requests</span>
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+@code {
+    private async void Logout() 
+    {
+        await sessionStorage.DeleteAsync("token");
+        navMan.NavigateTo("/", forceLoad: true);
+    }
+}

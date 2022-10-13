@@ -16,7 +16,7 @@ public class EmployeeLeaveInfoService : IEmployeeLeaveInfoService
     public async Task EmployeeLeaveAuthHeader()
     {
         await authService.GetToken();
-        client.DefaultRequestHeaders.Authorization = authService.AuthHeaderValue();
+		client.DefaultRequestHeaders.Authorization = authService.AuthHeaderValue();
     }
 
 	public async Task<LeaveBalanceModelDisplay> GetBalance(int leaveBalanceId)

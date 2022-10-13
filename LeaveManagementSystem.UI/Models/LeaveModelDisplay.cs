@@ -16,4 +16,7 @@ public class LeaveModelDisplay
     public decimal? DaysTaken { get; set; }
     public string? LeaveType { get; set; }
     public string? Reason { get; set; }
+    public bool Approved { get; set; }
+    public string? ApprovedBy { get; set; }
+    public DateTime DateApproved { get; set; }
 }

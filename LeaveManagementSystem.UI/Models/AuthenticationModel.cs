@@ -6,9 +6,9 @@ public class AuthenticationModel
 {
     [Required]
     [DataType(DataType.Text)]
-    public string? Username { get; set; } = "test";
+    public string? Username { get; set; }
 
     [Required]
     [DataType(DataType.Password)]
-    public string? Password { get; set; } = "test";
+    public string? Password { get; set; }
 }

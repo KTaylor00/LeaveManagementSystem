@@ -3,6 +3,7 @@
 @inject IEmployeeLeaveInfoService employeeService
 @inject NavigationManager navMan
 @inject IGoogleService gService
+@inject ProtectedSessionStorage sessionStorage
 
 @if (ValidSubmit) 
 {
@@ -12,13 +13,6 @@ else
 {
     <div class="card">
         <EditForm Model="employeeLeave" OnValidSubmit="SaveEmployeeLeaveInfo">
-            <div class="m-4 col-sm-2">
-                <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
-                    <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
-                    <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
-                </SfDropDownList>
-            </div>
-
             <div class="m-5">
                 <div class="row">
                     <div class="me-4 col-sm-2">
@@ -70,6 +64,8 @@ else
     private List<LeaveTypeModelDisplay> leaveTypes = new();
     private EmployeeLeaveFormModel employeeLeave = new();
 
+    private int userId;
+
     public bool ValidSubmit { get; set; } = false;
 
     protected override async Task OnInitializedAsync() 
@@ -78,8 +74,18 @@ else
         {
             leaveBalance.LeaveAllowed = 21;
             await employeeService.EmployeeLeaveAuthHeader();
-            employees = await employeeService.GetEmployees();
             leaveTypes = await employeeService.GetLeaveTypes();
+
+            var token = await sessionStorage.GetAsync<string>("token");
+
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token.Value);
+            string userSub = jwt.Claims.First(c => c.Type == "sub").Value;
+            userId = Convert.ToInt32(userSub);
+
+            employee = await employeeService.GetEmployee(userId);
+            leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
+
+            leaveBalance.LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken;
         }
         catch (Exception)
         {
@@ -106,12 +112,14 @@ else
             var googleEmployeeEvent = new
             {
                 Summary = leave.Reason,
-                Start = new[] {
+                Start = new[] 
+                {
                     new { dateTime = leave.StartDate }
-            },
-                End = new[] {
+                },
+                End = new[] 
+                {
                     new { dateTime = leave.EndDate }
-            }
+                }
             };
 
             LeaveBalanceModelDisplay newLeaveBalance = new()
@@ -144,14 +152,6 @@ else
         ValidSubmit = true;
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task EmployeeValueChangeHandler(ChangeEventArgs<int, EmployeeModelDisplay> args) 
-    {
-        employee = await employeeService.GetEmployee(args.Value);
-        leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
-
-        leaveBalance.LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken;
     }
 
     public void EndDateValueChangeHandler(ChangedEventArgs<DateTime?> args)
