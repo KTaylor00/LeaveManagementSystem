@@ -12,9 +12,9 @@
         <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
         <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
         <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approved" />
+        <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" />
         <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
-        <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
+        <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" />
     </GridColumns>
 </SfGrid>
 
@@ -59,10 +59,18 @@
         if (employeeLeave.Approved)
         {
             employeeLeave.Approval = "Approved";
+            employeeLeave.ApprovalDate = leaveApproval.DateApproved.ToString("dd/MM/yy");
         }
         else
         {
             employeeLeave.Approval = "Not Approved";
+            employeeLeave.ApprovalDate = "-";
+
+            if (employeeLeave.ApprovedBy == "Admin")
+            {
+                employeeLeave.Approval = "Denied";
+                employeeLeave.ApprovalDate = leaveApproval.DateApproved.ToString("dd/MM/yy");
+            }
         }
 
         if (!employeesLeaveInfo.Exists(name => name.FullName == employeeLeave.FullName))

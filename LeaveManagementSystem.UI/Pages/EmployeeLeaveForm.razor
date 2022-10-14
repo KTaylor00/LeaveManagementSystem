@@ -72,7 +72,6 @@ else
     {
         try
         {
-            leaveBalance.LeaveAllowed = 21;
             await employeeService.EmployeeLeaveAuthHeader();
             leaveTypes = await employeeService.GetLeaveTypes();
 
@@ -122,14 +121,6 @@ else
                 }
             };
 
-            LeaveBalanceModelDisplay newLeaveBalance = new()
-            {
-                fkEmployeeId = employeeLeave.fkEmployeeId,
-                fkLeaveTypeId = employeeLeave.fkLeaveTypeId,
-                LeaveTaken = employeeLeave.LeaveTaken,
-                LeaveAllowed = employeeLeave.LeaveAllowed
-            };
-
             LeaveModelDisplay newLeave = new()
             {
                 fkEmployeeId = employeeLeave.fkEmployeeId,
@@ -140,7 +131,6 @@ else
                 DaysTaken = employeeLeave.DaysTaken
             };
 
-            await employeeService.SaveLeaveBalance(newLeaveBalance);
             await employeeService.SaveLeave(newLeave);
             await gService.CreateEvent(googleEmployeeEvent);
         }
@@ -167,6 +157,5 @@ else
             date = date.Value.AddDays(1);
         }
         leave.DaysTaken = leaveDays;
-        leaveBalance.LeaveTaken += leave.DaysTaken;
     }
 }

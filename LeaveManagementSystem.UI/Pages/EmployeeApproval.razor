@@ -31,15 +31,15 @@ else
             <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
             <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
             <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
-            <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approved" />
+            <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" />
             <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
-            <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
+            <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" />
         </GridColumns>
     </SfGrid>
 
     <div class="d-flex mt-4">
-        <button class="btn btn-success me-4" @onclick="Approve">Approve</button>
-        <button class="btn btn-danger" @onclick="Reject">Reject</button>
+        <button class="btn btn-success me-4" @onclick="Approve" disabled="@btnDisable">Approve</button>
+        <button class="btn btn-danger" @onclick="Reject" disabled="@btnDisable">Reject</button>
     </div>
 }
 @code {
@@ -49,8 +49,11 @@ else
     private List<EmployeeModelDisplay> employees = new();
     private SfGrid<EmployeeLeaveFormModel>? LeaveInfoGrid;
     private LeaveApprovalModelDisplay leaveApproval = new();
+    private LeaveBalanceModelDisplay leaveBalance = new();
     private LeaveModelDisplay leave = new();
     private Timer aTimer;
+
+    private bool btnDisable = false;
 
     public string? ValidApproval { get; set; }
 
@@ -65,7 +68,7 @@ else
         employee = await employeeService.GetEmployee(args.Value);
         leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
         leaveApproval = await employeeService.GetLeaveApproval(employee.pkEmployeeId);
-        var leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
+        leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
 
         employeeLeave = new()
         {
@@ -84,10 +87,25 @@ else
         if (employeeLeave.Approved)
         {
             employeeLeave.Approval = "Approved";
+            employeeLeave.ApprovalDate = leaveApproval.DateApproved.ToString("dd/MM/yy");
+
+            if (employeeLeave.Approval == "Approved")
+            {
+                btnDisable = true;
+            }
         }
         else 
         {
             employeeLeave.Approval = "Not Approved";
+            employeeLeave.ApprovalDate = "-";
+            btnDisable = false;
+
+            if (employeeLeave.ApprovedBy == "Admin")
+            {
+                employeeLeave.Approval = "Denied";
+                employeeLeave.ApprovalDate = leaveApproval.DateApproved.ToString("dd/MM/yy");
+                btnDisable = true;
+            }
         }
 
         if (employeesLeaveInfo.Count > 0)
@@ -112,7 +130,18 @@ else
 
         aTimer = new System.Timers.Timer(1500);
         aTimer.Elapsed += OnTimedEvent;
-        aTimer.Enabled = true; 
+        aTimer.Enabled = true;
+    }
+
+    private void Reject() 
+    {
+        Approval(false);
+
+        ValidApproval = "no";
+
+        aTimer = new System.Timers.Timer(1500);
+        aTimer.Elapsed += OnTimedEvent;
+        aTimer.Enabled = true;
     }
 
     private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -123,13 +152,6 @@ else
             aTimer.Dispose();
             navMan.NavigateTo("/employee-approval", forceLoad: true);
         }
-    }
-
-    private void Reject() 
-    {
-        Approval(false);
-
-        ValidApproval = "no";
     }
 
     private async void Approval(bool approved) 
@@ -144,6 +166,30 @@ else
                 DateApproved = DateTime.Now
             };
 
+            LeaveBalanceModelDisplay newLeaveBalance;
+
+            if (approved)
+            {
+                newLeaveBalance = new()
+                {
+                    fkEmployeeId = employee.pkEmployeeId,
+                    fkLeaveTypeId = leave.fkLeaveTypeId,
+                    LeaveTaken = leaveBalance.LeaveTaken += leave.DaysTaken,
+                    LeaveAllowed = 21
+                };
+            }
+            else 
+            {
+                newLeaveBalance = new()
+                {
+                    fkEmployeeId = employee.pkEmployeeId,
+                    fkLeaveTypeId = leave.fkLeaveTypeId,
+                    LeaveTaken = leaveBalance.LeaveTaken,
+                    LeaveAllowed = 21
+                };
+            }
+
+            await employeeService.SaveLeaveBalance(newLeaveBalance);
             await employeeService.SaveLeaveApproval(leaveApproval);
 
             await InvokeAsync(StateHasChanged);
