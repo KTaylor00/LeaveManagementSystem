@@ -11,5 +11,7 @@ public interface IEmployeeLeaveInfoService
     Task<LeaveModelDisplay> GetLeaveData(int leaveId);
     Task<LeaveBalanceModelDisplay> GetBalance(int leaveBalanceId);
     Task SaveLeave(LeaveModelDisplay leave);
+    Task SaveLeaveApproval(LeaveApprovalModelDisplay leave);
+    Task<LeaveApprovalModelDisplay> GetLeaveApproval(int leaveId);
     Task SaveLeaveBalance(LeaveBalanceModelDisplay leaveBalance);
 }

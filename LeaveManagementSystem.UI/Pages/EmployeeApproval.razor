@@ -3,41 +3,56 @@
 
 @inject IEmployeeLeaveInfoService employeeService
 @inject ProtectedSessionStorage sessionStorage
+@inject NavigationManager navMan
 
-<div class="m-4 col-sm-2">
-    <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
-        <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
-        <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
-    </SfDropDownList>
-</div>
+@if (ValidApproval == "yes") 
+{
+    <h3 class="mt-4">Leave Approved</h3>
+}
+else if (ValidApproval == "no")
+{
+    <h3 class="mt-4">Leave Denied</h3>
+}
+else
+{
+    <div class="m-4 col-sm-2">
+        <SfDropDownList ID="Employee" TValue="int" TItem="EmployeeModelDisplay" @bind-Value="employee.pkEmployeeId" PopupHeight="230px" Placeholder="Employee" DataSource="@employees">
+            <DropDownListEvents TItem="EmployeeModelDisplay" TValue="int" ValueChange="EmployeeValueChangeHandler"></DropDownListEvents>
+            <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
+        </SfDropDownList>
+    </div>
 
-<SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo">
-    <GridColumns>
-        <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
-        <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
-        <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
-        <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Days Taken" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Days Left" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.Approved)" HeaderText="Approved" />
-        <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
-        <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
-    </GridColumns>
-</SfGrid>
+    <SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" EnableAdaptiveUI="true" AdaptiveUIMode="AdaptiveMode.Both">
+        <GridColumns>
+            <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
+            <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
+            <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
+            <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
+            <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approved" />
+            <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
+            <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
+        </GridColumns>
+    </SfGrid>
 
-<div class="d-flex mt-4">
-    <button class="btn btn-success me-4" @onclick="Approve">Approve</button>
-    <button class="btn btn-danger" @onclick="Reject">Reject</button>
-</div>
-
+    <div class="d-flex mt-4">
+        <button class="btn btn-success me-4" @onclick="Approve">Approve</button>
+        <button class="btn btn-danger" @onclick="Reject">Reject</button>
+    </div>
+}
 @code {
     private List<EmployeeLeaveFormModel> employeesLeaveInfo = new();
     private EmployeeLeaveFormModel? employeeLeave;
     private EmployeeModelDisplay employee = new();
     private List<EmployeeModelDisplay> employees = new();
     private SfGrid<EmployeeLeaveFormModel>? LeaveInfoGrid;
-    private LeaveModelDisplay leaveApproval = new();
+    private LeaveApprovalModelDisplay leaveApproval = new();
+    private LeaveModelDisplay leave = new();
+    private Timer aTimer;
+
+    public string? ValidApproval { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,7 +63,8 @@
     private async Task EmployeeValueChangeHandler(ChangeEventArgs<int, EmployeeModelDisplay> args)
     {
         employee = await employeeService.GetEmployee(args.Value);
-        var leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
+        leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
+        leaveApproval = await employeeService.GetLeaveApproval(employee.pkEmployeeId);
         var leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
 
         employeeLeave = new()
@@ -60,7 +76,19 @@
             LeaveType = leave.LeaveType,
             LeaveTaken = leaveBalance.LeaveTaken,
             LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken,
+            Approved = leaveApproval.Approved,
+            ApprovedBy = leaveApproval.ApprovedBy,
+            DateApproved = leaveApproval.DateApproved,
         };
+
+        if (employeeLeave.Approved)
+        {
+            employeeLeave.Approval = "Approved";
+        }
+        else 
+        {
+            employeeLeave.Approval = "Not Approved";
+        }
 
         if (employeesLeaveInfo.Count > 0)
         {
@@ -79,19 +107,50 @@
     private void Approve() 
     {
         Approval(true);
+
+        ValidApproval = "yes";
+
+        aTimer = new System.Timers.Timer(1500);
+        aTimer.Elapsed += OnTimedEvent;
+        aTimer.Enabled = true; 
+    }
+
+    private void OnTimedEvent(Object source, ElapsedEventArgs e)
+    {
+        if (aTimer.Interval == 1500)
+        {
+            aTimer.Stop();
+            aTimer.Dispose();
+            navMan.NavigateTo("/employee-approval", forceLoad: true);
+        }
     }
 
     private void Reject() 
     {
         Approval(false);
+
+        ValidApproval = "no";
     }
 
-    private void Approval(bool approved) 
+    private async void Approval(bool approved) 
     {
-        leaveApproval.Approved = approved;
-        leaveApproval.ApprovedBy = "Admin";
-        leaveApproval.DateApproved = DateTime.Now;
+        try
+        {
+            leaveApproval = new()
+            {
+                pkLeaveId = leave.pkLeaveId,
+                Approved = approved,
+                ApprovedBy = "Admin",
+                DateApproved = DateTime.Now
+            };
 
-        employeeService.SaveLeave(leaveApproval);
+            await employeeService.SaveLeaveApproval(leaveApproval);
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception)
+        {
+            throw;
+        } 
     }
 }

@@ -3,7 +3,7 @@
 @inject IEmployeeLeaveInfoService employeeService
 @inject ProtectedSessionStorage sessionStorage
 
-<SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo">
+<SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" EnableAdaptiveUI="true" AdaptiveUIMode="AdaptiveMode.Both">
     <GridColumns>
         <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
         <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
@@ -12,7 +12,7 @@
         <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
         <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
         <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.Approved)" HeaderText="Approved" />
+        <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approved" />
         <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
         <GridColumn Field="@nameof(employeeLeave.DateApproved)" HeaderText="Date Approved" Format="dd/MM/yy" />
     </GridColumns>
@@ -24,6 +24,7 @@
     private EmployeeModelDisplay employee = new();
     private List<EmployeeModelDisplay> employees = new();
     private SfGrid<EmployeeLeaveFormModel>? LeaveInfoGrid;
+    private LeaveApprovalModelDisplay leaveApproval = new();
 
     private int userId;
 
@@ -38,6 +39,7 @@
 
         employee = await employeeService.GetEmployee(userId);
         var leave = await employeeService.GetLeaveData(employee.pkEmployeeId);
+        leaveApproval = await employeeService.GetLeaveApproval(employee.pkEmployeeId);
         var leaveBalance = await employeeService.GetBalance(employee.pkEmployeeId);
 
         employeeLeave = new()
@@ -49,10 +51,19 @@
             LeaveType = leave.LeaveType,
             LeaveTaken = leaveBalance.LeaveTaken,
             LeaveLeft = leaveBalance.LeaveAllowed - leaveBalance.LeaveTaken,
-            Approved = leave.Approved,
-            ApprovedBy = leave.ApprovedBy,
-            DateApproved = leave.DateApproved,
+            Approved = leaveApproval.Approved,
+            ApprovedBy = leaveApproval.ApprovedBy,
+            DateApproved = leaveApproval.DateApproved,
         };
+
+        if (employeeLeave.Approved)
+        {
+            employeeLeave.Approval = "Approved";
+        }
+        else
+        {
+            employeeLeave.Approval = "Not Approved";
+        }
 
         if (!employeesLeaveInfo.Exists(name => name.FullName == employeeLeave.FullName))
             employeesLeaveInfo.Add(employeeLeave);

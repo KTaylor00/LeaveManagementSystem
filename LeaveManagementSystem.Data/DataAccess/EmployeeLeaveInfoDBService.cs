@@ -44,6 +44,20 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
 
         return db.SaveRecord(sql, p);
     }
+
+    public Task SaveLeaveApproval(LeaveApprovalModel leave)
+    {
+        var p = new DynamicParameters();
+        p.Add("pkLeaveId", leave.pkLeaveId, DbType.Int32);
+        p.Add("Approved", leave.Approved, DbType.Boolean);
+        p.Add("ApprovedBy", leave.ApprovedBy, DbType.String);
+        p.Add("DateApproved", leave.DateApproved, DbType.Date);
+
+        string sql = "LeaveApproval_Save";
+
+        return db.SaveRecord(sql, p);
+    }
+
     public Task DeleteLeave(int leaveId) => throw new NotImplementedException();
 
     // LeaveBalance DataAccess
@@ -86,9 +100,16 @@ public class EmployeeLeaveInfoDBService : IEmployeeLeaveInfoDBService
         return db.LoadRecord<LeaveModel, dynamic>(sql, new { });
     }
 
+    public Task<LeaveApprovalModel> GetLeaveApproval(int leaveId)
+    {
+        string sql = "LeaveApproval_Get " + leaveId.ToString();
+
+        return db.LoadRecord<LeaveApprovalModel, dynamic>(sql, new { });
+    }
+
     public Task<List<EmployeeModel>> GetEmployees()
     {
-        string sql = "SELECT * FROM Employee";
+        string sql = "SELECT * FROM Employee WHERE FirstName != 'Admin'";
 
         return db.LoadData<EmployeeModel, dynamic>(sql, new { });
     }

@@ -84,6 +84,23 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             }
         }
 
+        // GET api/EmployeesLeaveInfo/5/leave-approval
+        [HttpGet("{leaveId}/leave-approval")]
+        public async Task<ActionResult<LeaveApprovalModel>> GetLeaveApproval(int leaveId)
+        {
+            try
+            {
+                var output = await data.GetLeaveApproval(leaveId);
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The Get call to {ApiPath} failed. The Id was {leaveId}",
+                    $"api/EmployeesLeaveInfo/leaveId/leave-approval", leaveId);
+                return BadRequest();
+            }
+        }
+
         // GET api/EmployeesLeaveInfo/5/leave-balance
         [HttpGet("{leaveBalanceId}/leave-balance")]
         public async Task<ActionResult<LeaveBalanceModel>> GetLeaveBalance(int leaveBalanceId)
@@ -129,6 +146,22 @@ namespace LeaveManagementSystem.WebAPI.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/leave failed.");
+                return BadRequest();
+            }
+        }
+
+        // POST api/EmployeesLeaveInfo/leave-approval
+        [HttpPost("leave-approval")]
+        public async Task<IActionResult> SaveLeaveApproval([FromBody] LeaveApprovalModel leave)
+        {
+            try
+            {
+                await data.SaveLeaveApproval(leave);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "The POST call to api/EmployeesLeaveInfo/leave-approval failed.");
                 return BadRequest();
             }
         }

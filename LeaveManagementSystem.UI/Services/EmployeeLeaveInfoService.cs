@@ -39,7 +39,12 @@ public class EmployeeLeaveInfoService : IEmployeeLeaveInfoService
         return await client.GetFromJsonAsync<LeaveModelDisplay>($"EmployeesLeaveInfo/{leaveId}/leave");
     }
 
-	public async Task<List<LeaveTypeModelDisplay>> GetLeaveTypes()
+    public async Task<LeaveApprovalModelDisplay> GetLeaveApproval(int leaveId)
+    {
+        return await client.GetFromJsonAsync<LeaveApprovalModelDisplay>($"EmployeesLeaveInfo/{leaveId}/leave-approval");
+    }
+
+    public async Task<List<LeaveTypeModelDisplay>> GetLeaveTypes()
 	{
 		return await client.GetFromJsonAsync<List<LeaveTypeModelDisplay>>("EmployeesLeaveInfo/leave-types");
 	}
@@ -49,7 +54,12 @@ public class EmployeeLeaveInfoService : IEmployeeLeaveInfoService
 		await client.PostAsJsonAsync("EmployeesLeaveInfo/leave", leave);
 	}
 
-	public async Task SaveLeaveBalance(LeaveBalanceModelDisplay leaveBalance)
+    public async Task SaveLeaveApproval(LeaveApprovalModelDisplay leave)
+    {
+        await client.PostAsJsonAsync("EmployeesLeaveInfo/leave-approval", leave);
+    }
+
+    public async Task SaveLeaveBalance(LeaveBalanceModelDisplay leaveBalance)
 	{
 		await client.PostAsJsonAsync("EmployeesLeaveInfo/leave-balance", leaveBalance);
 

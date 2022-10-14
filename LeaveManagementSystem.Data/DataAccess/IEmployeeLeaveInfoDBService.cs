@@ -17,6 +17,8 @@ public interface IEmployeeLeaveInfoDBService
     // Leave DataAccess
     Task<LeaveModel> GetLeaveData(int leaveId);
     Task SaveLeave(LeaveModel leave);
+    Task SaveLeaveApproval(LeaveApprovalModel leave);
+    Task<LeaveApprovalModel> GetLeaveApproval(int leaveId);
     Task DeleteLeave(int leaveId);
 
     // LeaveBalance DataAccess
