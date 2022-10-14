@@ -172,6 +172,7 @@ else
             {
                 newLeaveBalance = new()
                 {
+                    pkLeaveBalanceId = employee.pkEmployeeId,
                     fkEmployeeId = employee.pkEmployeeId,
                     fkLeaveTypeId = leave.fkLeaveTypeId,
                     LeaveTaken = leaveBalance.LeaveTaken += leave.DaysTaken,
@@ -182,6 +183,7 @@ else
             {
                 newLeaveBalance = new()
                 {
+                    pkLeaveBalanceId = employee.pkEmployeeId,
                     fkEmployeeId = employee.pkEmployeeId,
                     fkLeaveTypeId = leave.fkLeaveTypeId,
                     LeaveTaken = leaveBalance.LeaveTaken,
