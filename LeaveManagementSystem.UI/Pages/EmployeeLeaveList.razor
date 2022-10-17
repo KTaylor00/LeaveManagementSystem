@@ -3,20 +3,23 @@
 @inject IEmployeeLeaveInfoService employeeService
 @inject ProtectedSessionStorage sessionStorage
 
-<SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" EnableAdaptiveUI="true" AdaptiveUIMode="AdaptiveMode.Both">
-    <GridColumns>
-        <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
-        <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
-        <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
-        <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
-        <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" />
-        <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
-        <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" />
-    </GridColumns>
-</SfGrid>
+<div style="width: calc(100vw - 20rem);">
+    <SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" AllowTextWrap="true">
+        <GridTextWrapSettings WrapMode="WrapMode.Both"></GridTextWrapSettings>
+        <GridColumns>
+            <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
+            <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
+            <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
+            <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
+            <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
+            <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" />
+            <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
+            <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" />
+        </GridColumns>
+    </SfGrid>
+</div>
 
 @code {
     private List<EmployeeLeaveFormModel> employeesLeaveInfo = new();

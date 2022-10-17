@@ -21,22 +21,23 @@ else
             <DropDownListFieldSettings Text="LastName" Value="pkEmployeeId"></DropDownListFieldSettings>
         </SfDropDownList>
     </div>
-
-    <SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" EnableAdaptiveUI="true" AdaptiveUIMode="AdaptiveMode.Both">
-        <GridColumns>
-            <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" />
-            <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" />
-            <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" />
-            <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" />
-            <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" />
-            <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" />
-            <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" />
-            <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" />
-            <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" />
-            <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" />
-        </GridColumns>
-    </SfGrid>
-
+    <div style="width: calc(100vw - 20rem);">
+        <SfGrid @ref="LeaveInfoGrid" DataSource="employeesLeaveInfo" AllowTextWrap="true">
+            <GridTextWrapSettings WrapMode="WrapMode.Both"></GridTextWrapSettings>
+            <GridColumns>
+                <GridColumn Field="@nameof(employeeLeave.FullName)" HeaderText="Name" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.StartDate)" HeaderText="Start Date" Format="dd/MM/yy" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.EndDate)" HeaderText="End Date" Format="dd/MM/yy" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.Reason)" HeaderText="Reason" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.LeaveType)" HeaderText="Leave Type" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.LeaveTaken)" HeaderText="Leave Taken" Format="#" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.LeaveLeft)" HeaderText="Leave Left" Format="#" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.Approval)" HeaderText="Approval" Width="120"  />
+                <GridColumn Field="@nameof(employeeLeave.ApprovedBy)" HeaderText="Approved By" Width="120" />
+                <GridColumn Field="@nameof(employeeLeave.ApprovalDate)" HeaderText="Date Approved" Format="dd/MM/yy" Width="120"  />
+            </GridColumns>
+        </SfGrid>
+    </div>
     <div class="d-flex mt-4">
         <button class="btn btn-success me-4" @onclick="Approve" disabled="@btnDisable">Approve</button>
         <button class="btn btn-danger" @onclick="Reject" disabled="@btnDisable">Reject</button>
